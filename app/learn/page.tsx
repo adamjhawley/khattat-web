@@ -78,7 +78,7 @@ export default function LearnPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {letterLessons.map((lesson, index) => {
           const isCompleted = progress.lessonsCompleted.includes(lesson.id)
-          const learnedCount = lesson.letterIds.filter((lid) =>
+          const learnedCount = lesson.letterIds.filter((lid: string) =>
             progress.lettersLearned.includes(lid)
           ).length
 

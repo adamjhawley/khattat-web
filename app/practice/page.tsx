@@ -14,6 +14,7 @@ import {
 import { DrawingCanvas } from '@/components/practice/DrawingCanvas'
 import { useProgressStore } from '@/lib/store/useProgressStore'
 import { practiceWords, PracticeWord, WordLetter } from '@/lib/data/practice-words'
+import { arabicLetters } from '@/lib/data/arabic-letters'
 
 const SESSION_SIZE = 8
 
@@ -187,7 +188,7 @@ export default function PracticePage() {
                 <span className="text-3xl font-bold text-accent">?</span>
               ) : (
                 <span className="text-4xl arabic text-arabic-text">
-                  {letter.arabic}
+                  {letter.displayChar}
                 </span>
               )}
             </div>
@@ -195,7 +196,7 @@ export default function PracticePage() {
         </div>
 
         <p className="text-center text-sm text-text-secondary mb-4">
-          Word: {exercise.word.english}
+          Word: {exercise.word.meaning}
         </p>
 
         {/* Hint Card */}
@@ -207,10 +208,10 @@ export default function PracticePage() {
           </div>
           <div className="text-center mb-2">
             <div className="text-6xl arabic text-arabic-text mb-1">
-              {exercise.missingLetter.letter.isolated}
+              {exercise.missingLetter.isolated}
             </div>
             <div className="text-sm font-semibold text-text-primary">
-              {exercise.missingLetter.letter.name}
+              {arabicLetters.find(l => l.id === exercise.missingLetter.letterId)?.name}
             </div>
             <div className="text-xs text-text-secondary">
               {FORM_LABELS[exercise.missingLetter.form]} form
@@ -229,7 +230,7 @@ export default function PracticePage() {
             exit={{ opacity: 0 }}
           >
             <DrawingCanvas
-              ghostLetter={exercise.missingLetter.arabic}
+              ghostLetter={exercise.missingLetter.displayChar}
               onDrawStart={() => {}}
             />
             <div className="text-center mt-4">
@@ -254,10 +255,10 @@ export default function PracticePage() {
                 Correct Answer
               </h3>
               <div className="text-8xl arabic text-arabic-text mb-4">
-                {exercise.missingLetter.arabic}
+                {exercise.missingLetter.displayChar}
               </div>
               <p className="text-sm text-text-secondary mb-6">
-                {exercise.missingLetter.letter.name} ({FORM_LABELS[exercise.missingLetter.form]} form)
+                {arabicLetters.find(l => l.id === exercise.missingLetter.letterId)?.name} ({FORM_LABELS[exercise.missingLetter.form]} form)
               </p>
               <p className="text-lg font-semibold text-text-primary mb-4">
                 Did you draw it correctly?

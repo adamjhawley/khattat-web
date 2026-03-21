@@ -37,11 +37,11 @@ export default function LessonDetailPage() {
 
   const isCompleted = progress.lessonsCompleted.includes(lesson.id)
   const letters = lesson.letterIds
-    .map((lid) => arabicLetters.find((l) => l.id === lid))
-    .filter((l): l is ArabicLetter => l !== undefined)
+    .map((lid: string) => arabicLetters.find((l) => l.id === lid))
+    .filter((l: ArabicLetter | undefined): l is ArabicLetter => l !== undefined)
 
   const handleComplete = () => {
-    lesson.letterIds.forEach((lid) => learnLetter(lid))
+    lesson.letterIds.forEach((lid: string) => learnLetter(lid))
     completeLesson(lesson.id, lesson.letterIds.length * 15)
   }
 
@@ -94,7 +94,7 @@ export default function LessonDetailPage() {
 
       {/* Letters Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        {letters.map((letter, index) => {
+        {letters.map((letter: ArabicLetter, index: number) => {
           const isLearned = progress.lettersLearned.includes(letter.id)
 
           return (

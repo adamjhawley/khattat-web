@@ -1,4 +1,4 @@
-import { LetterLesson } from "@/types/arabic";
+import { LetterLesson } from "@/lib/types/arabic";
 
 export const letterLessons: LetterLesson[] = [
   {

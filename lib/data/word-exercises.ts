@@ -1,5 +1,5 @@
-import { ArabicLetter } from "@/types/arabic";
-import { arabicLetters } from "@/mocks/arabic-letters";
+import { ArabicLetter } from "@/lib/types/arabic";
+import { arabicLetters } from "@/lib/data/arabic-letters";
 
 export interface WordExercise {
   id: string;
