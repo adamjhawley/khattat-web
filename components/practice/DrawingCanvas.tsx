@@ -142,7 +142,8 @@ export function DrawingCanvas({
     if (!isDrawing || disabled) return
 
     if (currentStroke.current.length > 0) {
-      setStrokes((prev) => [...prev, currentStroke.current])
+      // Save a COPY of the current stroke, not a reference
+      setStrokes((prev) => [...prev, [...currentStroke.current]])
       currentStroke.current = []
     }
     setIsDrawing(false)

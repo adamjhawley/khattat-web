@@ -174,7 +174,7 @@ export default function PracticePage() {
         </h2>
 
         {/* Word with missing letter */}
-        <div className="flex items-center justify-center gap-2 mb-2 flex-wrap">
+        <div className="flex items-center justify-center gap-2 mb-2 flex-wrap" dir="rtl">
           {exercise.word.letters.map((letter, i) => (
             <div
               key={i}
