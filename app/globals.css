@@ -1,26 +1,103 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Color palette from React Native app */
+  --background: #0F1923;
+  --card-dark: #162231;
+  --card-medium: #1C2D3F;
+  --accent: #D4A574;
+  --accent-light: #E8C99B;
+  --accent-dim: #A07B52;
+  --text-primary: #F5F0EB;
+  --text-secondary: #9EAAB8;
+  --text-muted: #5E6E7E;
+  --success: #4CAF7D;
+  --error: #E07058;
+  --warning: #E8C44A;
+  --border: #243447;
+  --tab-bar: #0A1219;
+  --tab-bar-border: #1A2A3A;
+  --overlay: rgba(15, 25, 35, 0.85);
+  --gold: #C9963C;
+  --gold-light: #F0D48A;
+  --arabic-text: #E8C99B;
 }
 
 @theme inline {
+  /* Map colors to Tailwind theme */
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card-dark: var(--card-dark);
+  --color-card-medium: var(--card-medium);
+  --color-accent: var(--accent);
+  --color-accent-light: var(--accent-light);
+  --color-accent-dim: var(--accent-dim);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --color-warning: var(--warning);
+  --color-border: var(--border);
+  --color-tab-bar: var(--tab-bar);
+  --color-tab-bar-border: var(--tab-bar-border);
+  --color-overlay: var(--overlay);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-arabic-text: var(--arabic-text);
+
+  /* Font families */
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-arabic: Amiri, 'Traditional Arabic', serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    @apply bg-background text-text-primary antialiased;
+  }
+
+  /* Arabic text styling */
+  .arabic {
+    font-family: var(--font-arabic);
+    direction: rtl;
+    color: var(--arabic-text);
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--background);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--accent) 50%, transparent);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Card styles */
+  .card {
+    @apply bg-card-dark border border-border rounded-2xl p-6;
+  }
+
+  .card-hover {
+    @apply transition-all duration-200 hover:border-accent hover:shadow-lg;
+  }
+
+  /* Button styles */
+  .btn-primary {
+    @apply bg-accent text-background px-6 py-3 rounded-xl font-semibold hover:bg-accent-light transition;
+  }
+
+  .btn-secondary {
+    @apply bg-card-medium border border-border px-6 py-3 rounded-xl hover:border-accent transition;
+  }
 }
