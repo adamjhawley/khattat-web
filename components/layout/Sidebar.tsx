@@ -1,10 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { BookOpen, Languages, PencilLine, User } from 'lucide-react'
+import { useRouter, usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { BookOpen, Languages, PencilLine, User, LogIn, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { ProgressWidget } from './ProgressWidget'
+import { createClient } from '@/lib/supabase/client'
+import type { User as SupabaseUser } from '@supabase/supabase-js'
 
 const navItems = [
   { href: '/learn', label: 'Learn', icon: BookOpen },
@@ -15,6 +18,27 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const [user, setUser] = useState<SupabaseUser | null>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+
+    supabase.auth.getUser().then(({ data }) => setUser(data.user))
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const handleSignOut = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/learn')
+    router.refresh()
+  }
 
   return (
     <aside className="w-64 bg-card-dark border-r border-border flex-shrink-0 hidden md:flex flex-col">
@@ -52,6 +76,30 @@ export function Sidebar() {
       {/* Progress Widget */}
       <div className="p-4 border-t border-border">
         <ProgressWidget />
+      </div>
+
+      {/* Auth footer */}
+      <div className="p-4 border-t border-border">
+        {user ? (
+          <div className="space-y-2">
+            <p className="text-xs text-text-muted truncate">{user.email}</p>
+            <button
+              onClick={handleSignOut}
+              className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-text-secondary hover:bg-card-medium hover:text-text-primary transition"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </button>
+          </div>
+        ) : (
+          <Link
+            href="/auth"
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-text-secondary hover:bg-card-medium hover:text-text-primary border border-border transition"
+          >
+            <LogIn className="w-4 h-4" />
+            Sign In to sync progress
+          </Link>
+        )}
       </div>
     </aside>
   )

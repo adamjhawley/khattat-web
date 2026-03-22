@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Amiri } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { ProgressSync } from "@/components/ProgressSync";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,8 +34,10 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${amiri.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex">
+        <ProgressSync />
         <Sidebar />
         <main className="flex-1 overflow-y-auto">
           <div className="max-w-7xl mx-auto p-6">

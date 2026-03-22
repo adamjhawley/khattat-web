@@ -1,13 +1,25 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Trophy, Flame, BookOpen, Type, User } from 'lucide-react'
+import { Trophy, Flame, BookOpen, Type, Zap } from 'lucide-react'
 import { useProgressStore } from '@/lib/store/useProgressStore'
 import { arabicLetters } from '@/lib/data/arabic-letters'
 import { letterLessons } from '@/lib/data/lessons'
+import { createClient } from '@/lib/supabase/client'
 
 export default function ProfilePage() {
-  const { progress, isSubscribed, subscribe, unsubscribe } = useProgressStore()
+  const { progress, isSubscribed } = useProgressStore()
+  const [userEmail, setUserEmail] = useState<string | null>(null)
+  const [portalLoading, setPortalLoading] = useState(false)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => {
+      setUserEmail(data.user?.email ?? null)
+    })
+  }, [])
 
   const level = Math.floor(progress.totalXP / 100) + 1
   const xpInLevel = progress.totalXP % 100
@@ -28,7 +40,7 @@ export default function ProfilePage() {
           <span className="text-5xl arabic text-arabic-text">خ</span>
         </div>
         <h1 className="text-3xl font-bold text-text-primary mb-2">
-          Arabic Learner
+          {userEmail ?? 'Arabic Learner'}
         </h1>
         <div className="flex items-center justify-center gap-2">
           <Trophy className="w-5 h-5 text-gold" />
@@ -185,32 +197,39 @@ export default function ProfilePage() {
                     <p className="text-sm text-text-secondary">Active</p>
                   </div>
                   <button
-                    onClick={unsubscribe}
+                    onClick={async () => {
+                      setPortalLoading(true)
+                      const res = await fetch('/api/stripe/portal', { method: 'POST' })
+                      const { url, error } = await res.json()
+                      if (error) { alert(error); setPortalLoading(false); return }
+                      window.location.href = url
+                    }}
+                    disabled={portalLoading}
                     className="btn-secondary w-full"
                   >
-                    Cancel Subscription
+                    {portalLoading ? 'Redirecting…' : 'Manage Subscription'}
                   </button>
                 </div>
               ) : (
                 <div>
                   <div className="text-center mb-4">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-accent/10 rounded-full mb-3">
+                      <Zap className="w-8 h-8 text-accent" />
+                    </div>
                     <h3 className="text-lg font-bold text-text-primary mb-2">
                       Go Pro
                     </h3>
-                    <p className="text-sm text-text-secondary mb-4">
-                      Remove all ads and support development
+                    <p className="text-sm text-text-secondary mb-2">
+                      All 11 lessons + unlimited practice
                     </p>
                     <div className="text-3xl font-bold text-accent mb-1">
-                      $2.99
+                      $4.99
                     </div>
                     <div className="text-sm text-text-muted">per month</div>
                   </div>
-                  <button onClick={subscribe} className="btn-primary w-full">
-                    Subscribe Now
-                  </button>
-                  <p className="text-xs text-text-muted text-center mt-3">
-                    This is a demo — no real payment will be charged.
-                  </p>
+                  <Link href="/upgrade" className="btn-primary w-full text-center block">
+                    Upgrade to Pro
+                  </Link>
                 </div>
               )}
             </div>

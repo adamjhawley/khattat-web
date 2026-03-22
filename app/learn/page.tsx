@@ -6,6 +6,7 @@ import { letterLessons } from '@/lib/data/lessons'
 import { arabicLetters } from '@/lib/data/arabic-letters'
 import { useProgressStore } from '@/lib/store/useProgressStore'
 import { LessonCard } from '@/components/lessons/LessonCard'
+import { isLessonFree } from '@/lib/config/gates'
 
 export default function LearnPage() {
   const { progress } = useProgressStore()
@@ -94,6 +95,7 @@ export default function LearnPage() {
               letterCount={lesson.letterIds.length}
               learnedCount={learnedCount}
               isCompleted={isCompleted}
+              locked={!isLessonFree(lesson.id)}
               index={index}
             />
           )

@@ -15,6 +15,7 @@ import { DrawingCanvas } from '@/components/practice/DrawingCanvas'
 import { useProgressStore } from '@/lib/store/useProgressStore'
 import { practiceWords, PracticeWord, WordLetter } from '@/lib/data/practice-words'
 import { arabicLetters } from '@/lib/data/arabic-letters'
+import { PracticeGate } from '@/components/PracticeGate'
 
 const SESSION_SIZE = 8
 
@@ -52,8 +53,8 @@ function buildSession(): WordDrawExercise[] {
 
 type ExerciseState = 'drawing' | 'reveal' | 'self-eval'
 
-export default function PracticePage() {
-  const { saveQuizScore, progress } = useProgressStore()
+function PracticePageInner() {
+  const { saveQuizScore, recordPracticeSession, progress } = useProgressStore()
   const [session, setSession] = useState<WordDrawExercise[]>(() => buildSession())
   const [currentIndex, setCurrentIndex] = useState<number>(0)
   const [score, setScore] = useState<number>(0)
@@ -75,6 +76,7 @@ export default function PracticePage() {
     if (currentIndex + 1 >= session.length) {
       const finalPct = Math.round((newScore / session.length) * 100)
       saveQuizScore('drawing_practice', finalPct)
+      recordPracticeSession()
       setScore(newScore)
       setComplete(true)
       return
@@ -220,47 +222,46 @@ export default function PracticePage() {
         </div>
       </motion.div>
 
-      {/* Drawing Canvas */}
-      <AnimatePresence mode="wait">
-        {state === 'drawing' && (
-          <motion.div
-            key="canvas"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <DrawingCanvas
-              ghostLetter={exercise.missingLetter.displayChar}
-              onDrawStart={() => {}}
-            />
+      {/* Drawing Canvas + Reveal — canvas stays mounted so the drawing is preserved */}
+      <div className={`flex gap-6 ${state === 'reveal' ? 'flex-col md:flex-row items-center md:items-start justify-center' : 'flex-col items-center'}`}>
+        <div className="flex flex-col items-center">
+          <DrawingCanvas
+            key={exercise.id}
+            ghostLetter={exercise.missingLetter.displayChar}
+            disabled={state === 'reveal'}
+            onDrawStart={() => {}}
+          />
+          {state === 'drawing' && (
             <div className="text-center mt-4">
               <button onClick={handleReveal} className="btn-primary">
                 <Eye className="w-5 h-5 inline mr-2" />
                 Check My Drawing
               </button>
             </div>
-          </motion.div>
-        )}
+          )}
+          {state === 'reveal' && (
+            <p className="text-sm text-text-muted mt-2">Your drawing</p>
+          )}
+        </div>
 
-        {state === 'reveal' && (
-          <motion.div
-            key="reveal"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="text-center"
-          >
-            <div className="card max-w-md mx-auto">
+        <AnimatePresence>
+          {state === 'reveal' && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0 }}
+              className="card text-center md:self-center"
+            >
               <h3 className="text-lg font-bold text-text-primary mb-4">
                 Correct Answer
               </h3>
-              <div className="text-8xl arabic text-arabic-text mb-4">
+              <div className="text-8xl arabic text-arabic-text mb-2">
                 {exercise.missingLetter.displayChar}
               </div>
               <p className="text-sm text-text-secondary mb-6">
                 {arabicLetters.find(l => l.id === exercise.missingLetter.letterId)?.name} ({FORM_LABELS[exercise.missingLetter.form]} form)
               </p>
-              <p className="text-lg font-semibold text-text-primary mb-4">
+              <p className="text-base font-semibold text-text-primary mb-4">
                 Did you draw it correctly?
               </p>
               <div className="flex gap-3 justify-center">
@@ -279,10 +280,18 @@ export default function PracticePage() {
                   No
                 </button>
               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
+  )
+}
+
+export default function PracticePage() {
+  return (
+    <PracticeGate>
+      <PracticePageInner />
+    </PracticeGate>
   )
 }

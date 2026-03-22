@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ChevronRight, CheckCircle2 } from 'lucide-react'
+import { ChevronRight, CheckCircle2, Lock } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 
 interface LessonCardProps {
@@ -15,6 +15,7 @@ interface LessonCardProps {
   letterCount: number
   learnedCount: number
   isCompleted: boolean
+  locked?: boolean
   index: number
 }
 
@@ -33,6 +34,7 @@ export function LessonCard({
   letterCount,
   learnedCount,
   isCompleted,
+  locked = false,
   index,
 }: LessonCardProps) {
   return (
@@ -41,11 +43,12 @@ export function LessonCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
     >
-      <Link href={`/learn/${id}`}>
+      <Link href={locked ? '/upgrade' : `/learn/${id}`}>
         <motion.div
           className={cn(
             'card card-hover cursor-pointer group',
-            isCompleted && 'border-success/50'
+            isCompleted && 'border-success/50',
+            locked && 'opacity-75'
           )}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -59,6 +62,9 @@ export function LessonCard({
                 </h2>
                 {isCompleted && (
                   <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
+                )}
+                {locked && (
+                  <Lock className="w-4 h-4 text-text-muted flex-shrink-0" />
                 )}
               </div>
               <h3 className="text-lg font-semibold text-text-primary mb-1">
@@ -82,38 +88,44 @@ export function LessonCard({
               </div>
             </div>
 
-            {/* Right side - Progress indicator */}
+            {/* Right side - Progress indicator or lock */}
             <div className="flex flex-col items-center justify-center gap-2">
-              <div className="relative w-16 h-16">
-                <svg className="w-16 h-16 transform -rotate-90">
-                  <circle
-                    cx="32"
-                    cy="32"
-                    r="28"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                    className="text-card-medium"
-                  />
-                  <circle
-                    cx="32"
-                    cy="32"
-                    r="28"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                    strokeDasharray={`${2 * Math.PI * 28}`}
-                    strokeDashoffset={`${2 * Math.PI * 28 * (1 - learnedCount / letterCount)}`}
-                    className="text-accent transition-all duration-500"
-                    strokeLinecap="round"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-sm font-bold text-text-primary">
-                    {Math.round((learnedCount / letterCount) * 100)}%
-                  </span>
+              {locked ? (
+                <div className="w-16 h-16 flex items-center justify-center bg-card-medium rounded-full">
+                  <Lock className="w-7 h-7 text-text-muted" />
                 </div>
-              </div>
+              ) : (
+                <div className="relative w-16 h-16">
+                  <svg className="w-16 h-16 transform -rotate-90">
+                    <circle
+                      cx="32"
+                      cy="32"
+                      r="28"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                      className="text-card-medium"
+                    />
+                    <circle
+                      cx="32"
+                      cy="32"
+                      r="28"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                      strokeDasharray={`${2 * Math.PI * 28}`}
+                      strokeDashoffset={`${2 * Math.PI * 28 * (1 - learnedCount / letterCount)}`}
+                      className="text-accent transition-all duration-500"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-sm font-bold text-text-primary">
+                      {Math.round((learnedCount / letterCount) * 100)}%
+                    </span>
+                  </div>
+                </div>
+              )}
               <ChevronRight className="w-5 h-5 text-text-muted group-hover:text-accent transition-colors" />
             </div>
           </div>

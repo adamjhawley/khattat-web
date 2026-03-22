@@ -9,6 +9,8 @@ import { arabicLetters } from '@/lib/data/arabic-letters'
 import { useProgressStore } from '@/lib/store/useProgressStore'
 import { ArabicLetter } from '@/lib/types/arabic'
 import { cn } from '@/lib/utils/cn'
+import { ProGate } from '@/components/ProGate'
+import { isLessonFree } from '@/lib/config/gates'
 
 export default function LessonDetailPage() {
   const params = useParams()
@@ -51,7 +53,7 @@ export default function LessonDetailPage() {
     advanced: 'bg-error/20 text-error',
   }
 
-  return (
+  const content = (
     <div className="max-w-4xl mx-auto">
       {/* Hero Card */}
       <motion.div
@@ -129,7 +131,6 @@ export default function LessonDetailPage() {
                     </div>
                   </div>
 
-                  {/* Letter forms preview */}
                   <div className="flex justify-center gap-3 mb-3">
                     <div className="text-center">
                       <div className="text-2xl arabic text-arabic-text">
@@ -192,4 +193,10 @@ export default function LessonDetailPage() {
       )}
     </div>
   )
+
+  if (!isLessonFree(lesson.id)) {
+    return <ProGate>{content}</ProGate>
+  }
+
+  return content
 }

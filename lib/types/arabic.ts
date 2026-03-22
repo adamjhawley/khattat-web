@@ -59,4 +59,7 @@ export interface UserProgress {
   currentStreak: number;
   lastActiveDate: string;
   totalXP: number;
+  // Daily practice tracking for free-tier rate limit
+  lastPracticeDate: string;
+  practiceSessionsToday: number;
 }
