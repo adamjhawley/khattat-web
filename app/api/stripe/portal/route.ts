@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     .from('subscriptions')
     .select('stripe_customer_id')
     .eq('user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!sub?.stripe_customer_id) {
     return NextResponse.json({ error: 'No subscription found' }, { status: 404 })

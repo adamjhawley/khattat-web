@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       .from('subscriptions')
       .select('user_id')
       .eq('stripe_customer_id', customerId)
-      .single()
+      .maybeSingle()
 
     if (sub?.user_id) {
       await supabase.from('subscriptions').upsert({
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       .from('subscriptions')
       .select('user_id')
       .eq('stripe_customer_id', customerId)
-      .single()
+      .maybeSingle()
 
     if (sub?.user_id) {
       await supabase.from('subscriptions').upsert({

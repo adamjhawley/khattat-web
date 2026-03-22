@@ -132,14 +132,14 @@ export const useProgressStore = create<ProgressStore>()(
           .from('user_progress')
           .select('*')
           .eq('user_id', userId)
-          .single()
+          .maybeSingle()
 
         // Load subscription
         const { data: subRow } = await supabase
           .from('subscriptions')
           .select('status')
           .eq('user_id', userId)
-          .single()
+          .maybeSingle()
 
         const isSubscribed = subRow?.status === 'active'
 
@@ -159,7 +159,19 @@ export const useProgressStore = create<ProgressStore>()(
           })
         } else {
           // First login — seed the DB with current local progress
-          await upsertProgress(userId, get().progress)
+          const { error } = await supabase.from('user_progress').upsert({
+            user_id: userId,
+            lessons_completed: get().progress.lessonsCompleted,
+            letters_learned: get().progress.lettersLearned,
+            quiz_scores: get().progress.quizScores,
+            current_streak: get().progress.currentStreak,
+            last_active_date: get().progress.lastActiveDate,
+            total_xp: get().progress.totalXP,
+            last_practice_date: get().progress.lastPracticeDate,
+            practice_sessions_today: get().progress.practiceSessionsToday,
+            updated_at: new Date().toISOString(),
+          })
+          if (error) console.error('Failed to seed user_progress:', error)
           set({ isSubscribed })
         }
       },

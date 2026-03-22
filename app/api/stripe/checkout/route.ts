@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       .from('subscriptions')
       .select('stripe_customer_id')
       .eq('user_id', user.id)
-      .single()
+      .maybeSingle()
 
     let customerId = sub?.stripe_customer_id
 
