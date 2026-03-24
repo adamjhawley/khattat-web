@@ -8,6 +8,7 @@ import {
   Trophy,
   Zap,
   Eye,
+  EyeOff,
   ThumbsUp,
   ThumbsDown,
 } from 'lucide-react'
@@ -60,6 +61,7 @@ function PracticePageInner() {
   const [score, setScore] = useState<number>(0)
   const [complete, setComplete] = useState<boolean>(false)
   const [state, setState] = useState<ExerciseState>('drawing')
+  const [showHint, setShowHint] = useState(false)
 
   const bestScore = progress.quizScores['drawing_practice'] ?? 0
 
@@ -85,6 +87,7 @@ function PracticePageInner() {
     setScore(newScore)
     setCurrentIndex((i) => i + 1)
     setState('drawing')
+    setShowHint(false)
   }
 
   const handleRestart = () => {
@@ -94,6 +97,7 @@ function PracticePageInner() {
     setScore(0)
     setComplete(false)
     setState('drawing')
+    setShowHint(false)
   }
 
   if (complete) {
@@ -144,7 +148,7 @@ function PracticePageInner() {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Progress Bar */}
-      <div className="mb-6">
+      <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-semibold text-text-primary">
             Exercise {currentIndex + 1} of {session.length}
@@ -169,54 +173,51 @@ function PracticePageInner() {
         key={exercise.id}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="card mb-6"
+        className="card mb-4"
       >
-        <h2 className="text-xl font-bold text-text-primary mb-4 text-center">
-          Draw the missing letter
-        </h2>
-
-        {/* Word with missing letter */}
-        <div className="flex items-center justify-center gap-2 mb-2 flex-wrap" dir="rtl">
-          {exercise.word.letters.map((letter, i) => (
-            <div
-              key={i}
-              className={`inline-flex items-center justify-center w-16 h-16 rounded-lg ${
-                i === exercise.missingIndex
-                  ? 'bg-accent/20 border-2 border-accent'
-                  : 'bg-card-medium'
-              }`}
-            >
-              {i === exercise.missingIndex ? (
-                <span className="text-3xl font-bold text-accent">?</span>
-              ) : (
-                <span className="text-4xl arabic text-arabic-text">
-                  {letter.displayChar}
-                </span>
-              )}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          {/* Word with missing letter */}
+          <div className="flex-1 w-full">
+            <h2 className="text-base font-bold text-text-primary mb-2 text-center sm:text-left">
+              Draw the missing letter
+            </h2>
+            <div className="flex items-center justify-center gap-2 mb-1 flex-wrap" dir="rtl">
+              {exercise.word.letters.map((letter, i) => (
+                <div
+                  key={i}
+                  className={`inline-flex items-center justify-center w-12 h-12 rounded-lg ${
+                    i === exercise.missingIndex
+                      ? 'bg-accent/20 border-2 border-accent'
+                      : 'bg-card-medium'
+                  }`}
+                >
+                  {i === exercise.missingIndex ? (
+                    <span className="text-2xl font-bold text-accent">?</span>
+                  ) : (
+                    <span className="text-3xl arabic text-arabic-text">
+                      {letter.displayChar}
+                    </span>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-
-        <p className="text-center text-sm text-text-secondary mb-4">
-          Word: {exercise.word.meaning}
-        </p>
-
-        {/* Hint Card */}
-        <div className="bg-card-medium rounded-lg p-4 max-w-sm mx-auto">
-          <div className="text-center mb-2">
-            <span className="text-xs text-text-muted uppercase">
-              Letter to draw
-            </span>
+            <p className="text-center text-xs text-text-secondary">
+              {exercise.word.meaning}
+            </p>
           </div>
-          <div className="text-center mb-2">
-            <div className="text-6xl arabic text-arabic-text mb-1">
+
+          {/* Hint */}
+          <div className="bg-card-medium rounded-lg p-3 flex items-center gap-3 sm:flex-col sm:text-center">
+            <div className="text-5xl arabic text-arabic-text leading-none">
               {exercise.missingLetter.isolated}
             </div>
-            <div className="text-sm font-semibold text-text-primary">
-              {arabicLetters.find(l => l.id === exercise.missingLetter.letterId)?.name}
-            </div>
-            <div className="text-xs text-text-secondary">
-              {FORM_LABELS[exercise.missingLetter.form]} form
+            <div>
+              <div className="text-sm font-semibold text-text-primary">
+                {arabicLetters.find(l => l.id === exercise.missingLetter.letterId)?.name}
+              </div>
+              <div className="text-xs text-text-secondary">
+                {FORM_LABELS[exercise.missingLetter.form]} form
+              </div>
             </div>
           </div>
         </div>
@@ -227,15 +228,22 @@ function PracticePageInner() {
         <div className="flex flex-col items-center">
           <DrawingCanvas
             key={exercise.id}
-            ghostLetter={exercise.missingLetter.displayChar}
+            ghostLetter={showHint ? exercise.missingLetter.displayChar : undefined}
             disabled={state === 'reveal'}
             onDrawStart={() => {}}
           />
           {state === 'drawing' && (
-            <div className="text-center mt-4">
+            <div className="flex gap-3 mt-3">
+              <button
+                onClick={() => setShowHint(h => !h)}
+                className="flex items-center gap-2 px-4 py-2 bg-card-dark border border-border rounded-lg hover:bg-card-medium transition text-sm text-text-secondary"
+              >
+                {showHint ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showHint ? 'Hide hint' : 'Show hint'}
+              </button>
               <button onClick={handleReveal} className="btn-primary">
                 <Eye className="w-5 h-5 inline mr-2" />
-                Check My Drawing
+                Check
               </button>
             </div>
           )}

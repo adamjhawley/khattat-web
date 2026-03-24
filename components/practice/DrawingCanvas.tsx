@@ -115,7 +115,7 @@ export function DrawingCanvas({
     if (!canvas) return
 
     const dpr = window.devicePixelRatio || 1
-    const logicalSize = 400
+    const logicalSize = window.innerWidth < 640 ? Math.min(window.innerWidth - 48, 260) : 400
     canvas.width = logicalSize * dpr
     canvas.height = logicalSize * dpr
     canvas.style.width = `${logicalSize}px`
@@ -124,6 +124,20 @@ export function DrawingCanvas({
     redrawCanvas()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Add non-passive touch listeners to prevent page scroll while drawing
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const prevent = (e: TouchEvent) => { if (!disabled) e.preventDefault() }
+    canvas.addEventListener('touchstart', prevent, { passive: false })
+    canvas.addEventListener('touchmove', prevent, { passive: false })
+    return () => {
+      canvas.removeEventListener('touchstart', prevent)
+      canvas.removeEventListener('touchmove', prevent)
+    }
+  }, [disabled])
 
   const getCoordinates = (e: React.MouseEvent<HTMLCanvasElement>): Point => {
     const canvas = canvasRef.current!
