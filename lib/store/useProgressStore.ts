@@ -12,7 +12,7 @@ interface ProgressStore {
   completeLesson: (lessonId: string, xp: number) => void
   learnLetter: (letterId: string) => void
   saveQuizScore: (quizId: string, score: number) => void
-  recordPracticeSession: () => void
+  recordPracticeSession: (scorePct?: number) => void
 
   // Supabase sync
   loadProgress: (userId: string) => Promise<void>
@@ -110,14 +110,16 @@ export const useProgressStore = create<ProgressStore>()(
         })
       },
 
-      recordPracticeSession: () => {
+      recordPracticeSession: (scorePct = 0) => {
         set((state) => {
           const today = new Date().toISOString().split('T')[0]
           const isNewDay = state.progress.lastPracticeDate !== today
+          const xpEarned = Math.round(10 + (scorePct / 100) * 20) // 10–30 XP based on score
           const next: UserProgress = {
             ...state.progress,
             lastPracticeDate: today,
             practiceSessionsToday: isNewDay ? 1 : state.progress.practiceSessionsToday + 1,
+            totalXP: state.progress.totalXP + xpEarned,
           }
           get().syncProgress(next)
           return { progress: next }

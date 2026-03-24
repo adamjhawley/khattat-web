@@ -78,7 +78,7 @@ function PracticePageInner() {
     if (currentIndex + 1 >= session.length) {
       const finalPct = Math.round((newScore / session.length) * 100)
       saveQuizScore('drawing_practice', finalPct)
-      recordPracticeSession()
+      recordPracticeSession(finalPct)
       setScore(newScore)
       setComplete(true)
       return
@@ -121,9 +121,13 @@ function PracticePageInner() {
           <p className="text-text-secondary mb-2">
             You got {score} out of {session.length} correct
           </p>
+          <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-lg mb-2">
+            <Zap className="w-4 h-4" />
+            <span className="font-semibold">+{Math.round(10 + (finalPct / 100) * 20)} XP</span>
+          </div>
           {isNewBest && (
             <div className="inline-flex items-center gap-2 bg-success/20 text-success px-4 py-2 rounded-lg mb-6">
-              <Zap className="w-4 h-4" />
+              <CheckCircle2 className="w-4 h-4" />
               <span className="font-semibold">New Best Score!</span>
             </div>
           )}
