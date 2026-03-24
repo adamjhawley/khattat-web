@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Amiri } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { BottomNav } from "@/components/layout/BottomNav";
 import { ProgressSync } from "@/components/ProgressSync";
 
 const geistSans = Geist({
@@ -40,10 +41,11 @@ export default function RootLayout({
         <ProgressSync />
         <Sidebar />
         <main className="flex-1 overflow-y-auto">
-          <div className="max-w-7xl mx-auto p-6">
+          <div className="max-w-7xl mx-auto p-6 pb-24 md:pb-6">
             {children}
           </div>
         </main>
+        <BottomNav />
       </body>
     </html>
   );
