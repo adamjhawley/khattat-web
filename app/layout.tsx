@@ -24,6 +24,12 @@ const amiri = Amiri({
 export const metadata: Metadata = {
   title: "Khattat - Learn Arabic Letters",
   description: "Interactive Arabic language learning app focusing on letter formation and connection rules",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico" },
+    ],
+  },
 };
 
 export default function RootLayout({
