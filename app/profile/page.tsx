@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Trophy, Flame, BookOpen, Type, Zap } from 'lucide-react'
@@ -10,16 +11,25 @@ import { letterLessons } from '@/lib/data/lessons'
 import { createClient } from '@/lib/supabase/client'
 
 export default function ProfilePage() {
-  const { progress, isSubscribed } = useProgressStore()
+  const { progress, isSubscribed, loadProgress } = useProgressStore()
   const [userEmail, setUserEmail] = useState<string | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data }) => {
       setUserEmail(data.user?.email ?? null)
+      // Re-fetch subscription status after successful checkout
+      // Retry a few times to allow the webhook time to update Supabase
+      if (data.user && searchParams.get('upgraded') === '1') {
+        const userId = data.user.id
+        loadProgress(userId)
+        setTimeout(() => loadProgress(userId), 2000)
+        setTimeout(() => loadProgress(userId), 5000)
+      }
     })
-  }, [])
+  }, [searchParams, loadProgress])
 
   const level = Math.floor(progress.totalXP / 100) + 1
   const xpInLevel = progress.totalXP % 100
