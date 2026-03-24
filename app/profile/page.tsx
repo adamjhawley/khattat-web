@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Trophy, Flame, BookOpen, Type, Zap } from 'lucide-react'
+import { Trophy, Flame, BookOpen, Type, Zap, LogIn } from 'lucide-react'
 import { useProgressStore } from '@/lib/store/useProgressStore'
 import { arabicLetters } from '@/lib/data/arabic-letters'
 import { letterLessons } from '@/lib/data/lessons'
@@ -52,12 +52,21 @@ function ProfilePageInner() {
         <h1 className="text-3xl font-bold text-text-primary mb-2">
           {userEmail ?? 'Arabic Learner'}
         </h1>
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2 mb-3">
           <Trophy className="w-5 h-5 text-gold" />
           <span className="text-xl font-semibold text-text-primary">
             Level {level}
           </span>
         </div>
+        {!userEmail && (
+          <Link
+            href="/auth"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-bg-dark font-semibold rounded-lg hover:bg-accent-light transition"
+          >
+            <LogIn className="w-4 h-4" />
+            Sign in to save progress
+          </Link>
+        )}
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

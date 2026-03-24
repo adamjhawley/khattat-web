@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { CheckCircle2, ChevronRight } from 'lucide-react'
+import { CheckCircle2, ChevronRight, LogIn } from 'lucide-react'
 import { letterLessons } from '@/lib/data/lessons'
 import { arabicLetters } from '@/lib/data/arabic-letters'
 import { useProgressStore } from '@/lib/store/useProgressStore'
@@ -11,6 +11,8 @@ import { ArabicLetter } from '@/lib/types/arabic'
 import { cn } from '@/lib/utils/cn'
 import { ProGate } from '@/components/ProGate'
 import { isLessonFree } from '@/lib/config/gates'
+import { createClient } from '@/lib/supabase/client'
+import { useEffect, useState } from 'react'
 
 export default function LessonDetailPage() {
   const params = useParams()
@@ -38,6 +40,11 @@ export default function LessonDetailPage() {
   }
 
   const isCompleted = progress.lessonsCompleted.includes(lesson.id)
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data }) => setIsLoggedIn(!!data.user))
+  }, [])
   const letters = lesson.letterIds
     .map((lid: string) => arabicLetters.find((l) => l.id === lid))
     .filter((l: ArabicLetter | undefined): l is ArabicLetter => l !== undefined)
@@ -190,6 +197,27 @@ export default function LessonDetailPage() {
             Back to Lessons
           </motion.button>
         </Link>
+      )}
+
+      {/* Sign-in nudge for logged-out users */}
+      {isLoggedIn === false && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mt-4 flex items-center justify-between bg-card-dark border border-accent/30 rounded-xl px-4 py-3"
+        >
+          <p className="text-sm text-text-secondary">
+            Sign in to save your progress across devices
+          </p>
+          <Link
+            href="/auth"
+            className="flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent-light transition ml-4 flex-shrink-0"
+          >
+            <LogIn className="w-4 h-4" />
+            Sign in
+          </Link>
+        </motion.div>
       )}
     </div>
   )
