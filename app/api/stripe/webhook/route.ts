@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         stripe_subscription_id: subscriptionId,
         status: subscription.status,
         price_id: subscription.items.data[0]?.price.id ?? null,
-        current_period_end: new Date(((subscription as unknown) as { current_period_end: number }).current_period_end * 1000).toISOString(),
+        current_period_end: null,
         updated_at: new Date().toISOString(),
       })
     }
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
         stripe_subscription_id: subscription.id,
         status: subscription.status,
         price_id: subscription.items.data[0]?.price.id ?? null,
-        current_period_end: new Date(((subscription as unknown) as { current_period_end: number }).current_period_end * 1000).toISOString(),
+        current_period_end: null,
         updated_at: new Date().toISOString(),
       })
     }
