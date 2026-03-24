@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -10,7 +10,7 @@ import { arabicLetters } from '@/lib/data/arabic-letters'
 import { letterLessons } from '@/lib/data/lessons'
 import { createClient } from '@/lib/supabase/client'
 
-export default function ProfilePage() {
+function ProfilePageInner() {
   const { progress, isSubscribed, loadProgress } = useProgressStore()
   const [userEmail, setUserEmail] = useState<string | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
@@ -256,5 +256,13 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ProfilePage() {
+  return (
+    <Suspense>
+      <ProfilePageInner />
+    </Suspense>
   )
 }
