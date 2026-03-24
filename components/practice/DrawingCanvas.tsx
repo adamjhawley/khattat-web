@@ -115,7 +115,7 @@ export function DrawingCanvas({
     if (!canvas) return
 
     const dpr = window.devicePixelRatio || 1
-    const logicalSize = window.innerWidth < 640 ? Math.min(window.innerWidth - 48, 260) : 400
+    const logicalSize = window.innerWidth < 640 ? Math.min(window.innerWidth - 48, 220) : 400
     canvas.width = logicalSize * dpr
     canvas.height = logicalSize * dpr
     canvas.style.width = `${logicalSize}px`
@@ -237,10 +237,10 @@ export function DrawingCanvas({
   const hasDrawing = strokes.length > 0 || currentStroke.current.length > 0
 
   return (
-    <div className="flex flex-col items-center my-2">
+    <div className="flex flex-col items-center my-1 sm:my-2">
       <canvas
         ref={canvasRef}
-        className={`bg-card-medium rounded-2xl border-2 border-accent/30 cursor-crosshair ${
+        className={`bg-card-medium rounded-2xl border-2 border-accent/30 cursor-crosshair touch-none ${
           disabled ? 'opacity-60' : ''
         }`}
         onMouseDown={startDrawing}

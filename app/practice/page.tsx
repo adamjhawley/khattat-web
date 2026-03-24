@@ -152,8 +152,8 @@ function PracticePageInner() {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Progress Bar */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
+      <div className="mb-2 sm:mb-4">
+        <div className="flex items-center justify-between mb-1 sm:mb-2">
           <span className="text-sm font-semibold text-text-primary">
             Exercise {currentIndex + 1} of {session.length}
           </span>
@@ -177,9 +177,9 @@ function PracticePageInner() {
         key={exercise.id}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="card mb-4"
+        className="card mb-2 sm:mb-4 py-3 sm:py-5"
       >
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
           {/* Word with missing letter */}
           <div className="flex-1 w-full">
             <h2 className="text-base font-bold text-text-primary mb-2 text-center sm:text-left">
@@ -211,8 +211,8 @@ function PracticePageInner() {
           </div>
 
           {/* Hint */}
-          <div className="bg-card-medium rounded-lg p-3 flex items-center gap-3 sm:flex-col sm:text-center">
-            <div className="text-5xl arabic text-arabic-text leading-none">
+          <div className="bg-card-medium rounded-lg p-2 sm:p-3 flex items-center gap-3 sm:flex-col sm:text-center">
+            <div className="text-4xl sm:text-5xl arabic text-arabic-text leading-none">
               {exercise.missingLetter.isolated}
             </div>
             <div>
