@@ -37,16 +37,23 @@ export async function POST(request: NextRequest) {
     const subscriptionId = session.subscription as string
     const subscription = await stripe.subscriptions.retrieve(subscriptionId)
 
-    // Find user by customer ID
-    const { data: sub } = await supabase
-      .from('subscriptions')
-      .select('user_id')
-      .eq('stripe_customer_id', customerId)
-      .maybeSingle()
+    // Primary: get user_id from Stripe customer metadata (set at customer creation)
+    const customer = await stripe.customers.retrieve(customerId) as Stripe.Customer
+    let userId: string | undefined = customer.metadata?.supabase_user_id
 
-    if (sub?.user_id) {
-      await supabase.from('subscriptions').upsert({
-        user_id: sub.user_id,
+    // Fallback: look up from existing subscriptions row
+    if (!userId) {
+      const { data: sub } = await supabase
+        .from('subscriptions')
+        .select('user_id')
+        .eq('stripe_customer_id', customerId)
+        .maybeSingle()
+      userId = sub?.user_id
+    }
+
+    if (userId) {
+      const { error } = await supabase.from('subscriptions').upsert({
+        user_id: userId,
         stripe_customer_id: customerId,
         stripe_subscription_id: subscriptionId,
         status: subscription.status,
@@ -54,6 +61,9 @@ export async function POST(request: NextRequest) {
         current_period_end: null,
         updated_at: new Date().toISOString(),
       })
+      if (error) console.error('Supabase upsert error (checkout):', error)
+    } else {
+      console.error('checkout.session.completed: could not resolve user_id for customer', customerId)
     }
   }
 
