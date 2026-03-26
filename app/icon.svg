@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="7" fill="#0F1923"/>
+  <rect width="32" height="32" rx="7" fill="url(#g)"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1a2a3a"/>
+      <stop offset="100%" stop-color="#0F1923"/>
+    </linearGradient>
+  </defs>
+  <circle cx="16" cy="16" r="13" fill="none" stroke="#C9A96E" stroke-width="1.2" opacity="0.5"/>
+  <text
+    x="16"
+    y="22"
+    text-anchor="middle"
+    font-family="serif"
+    font-size="18"
+    fill="#C9A96E"
+  >خ</text>
+</svg>
