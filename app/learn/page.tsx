@@ -1,15 +1,22 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Flame, Star, Type } from 'lucide-react'
+import { Flame, Star, Type, LogIn } from 'lucide-react'
+import Link from 'next/link'
 import { letterLessons } from '@/lib/data/lessons'
 import { arabicLetters } from '@/lib/data/arabic-letters'
 import { useProgressStore } from '@/lib/store/useProgressStore'
 import { LessonCard } from '@/components/lessons/LessonCard'
-import { isLessonFree } from '@/lib/config/gates'
+import { createClient } from '@/lib/supabase/client'
+import { useEffect, useState } from 'react'
 
 export default function LearnPage() {
   const { progress } = useProgressStore()
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data }) => setIsLoggedIn(!!data.user))
+  }, [])
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -75,6 +82,27 @@ export default function LearnPage() {
         </div>
       </motion.div>
 
+      {/* Sign-in nudge for logged-out users */}
+      {isLoggedIn === false && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="mb-6 flex items-center justify-between bg-card-dark border border-accent/30 rounded-xl px-4 py-3"
+        >
+          <p className="text-sm text-text-secondary">
+            Create a free account to save your progress across devices
+          </p>
+          <Link
+            href="/auth"
+            className="flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent-light transition ml-4 flex-shrink-0"
+          >
+            <LogIn className="w-4 h-4" />
+            Sign up free
+          </Link>
+        </motion.div>
+      )}
+
       {/* Lessons Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {letterLessons.map((lesson, index) => {
@@ -95,7 +123,6 @@ export default function LearnPage() {
               letterCount={lesson.letterIds.length}
               learnedCount={learnedCount}
               isCompleted={isCompleted}
-              locked={!isLessonFree(lesson.id)}
               index={index}
             />
           )

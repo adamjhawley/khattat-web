@@ -9,8 +9,6 @@ import { arabicLetters } from '@/lib/data/arabic-letters'
 import { useProgressStore } from '@/lib/store/useProgressStore'
 import { ArabicLetter } from '@/lib/types/arabic'
 import { cn } from '@/lib/utils/cn'
-import { ProGate } from '@/components/ProGate'
-import { isLessonFree } from '@/lib/config/gates'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 
@@ -221,10 +219,6 @@ export default function LessonDetailPage() {
       )}
     </div>
   )
-
-  if (!isLessonFree(lesson.id)) {
-    return <ProGate>{content}</ProGate>
-  }
 
   return content
 }
